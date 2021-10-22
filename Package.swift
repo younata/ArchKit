@@ -5,11 +5,21 @@ import PackageDescription
 
 let package = Package(
     name: "ArchKit",
+    platforms: [.iOS(.v14), .macCatalyst(.v14), .tvOS(.v14)],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "ArchKit",
-            targets: ["ArchKit"]),
+            targets: ["ArchKit"]
+        ),
+        .library(
+            name: "CombineExtensions",
+            targets: ["CombineExtensions"]
+        ),
+        .library(
+            name: "UIKitExtensions",
+            targets: ["UIKitExtensions"]
+        ),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -20,9 +30,23 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "ArchKit",
-            dependencies: []),
+            dependencies: []
+        ),
         .testTarget(
             name: "ArchKitTests",
-            dependencies: ["ArchKit"]),
+            dependencies: ["ArchKit"]
+        ),
+        .target(
+            name: "CombineExtensions",
+            dependencies: []
+        ),
+        .testTarget(
+            name: "CombineExtensionsTests",
+            dependencies: ["CombineExtensions"]
+        ),
+        .target(
+            name: "UIKitExtensions",
+            dependencies: []
+        ),
     ]
 )
