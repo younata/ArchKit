@@ -95,6 +95,16 @@ extension UIView {
      A holder for the layout priorities of each edge a view can have.
      */
     public struct LayoutPriorities {
+        /**
+         Generates a LayoutPriorities struct with the given properties
+         */
+        public init(top: UILayoutPriority, leading: UILayoutPriority, bottom: UILayoutPriority, trailing: UILayoutPriority) {
+            self.top = top
+            self.leading = leading
+            self.bottom = bottom
+            self.trailing = trailing
+        }
+
         /// The layout priority for the top of the view.
         public let top: UILayoutPriority
         /// The layout priority for the leading edge of the view.
