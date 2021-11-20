@@ -20,6 +20,10 @@ let package = Package(
             name: "UIKitExtensions",
             targets: ["UIKitExtensions"]
         ),
+        .library(
+            name: "CocoaExtensions",
+            targets: ["CocoaExtensions"]
+        )
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -48,5 +52,9 @@ let package = Package(
             name: "UIKitExtensions",
             dependencies: []
         ),
+        .target(
+            name: "CocoaExtensions",
+            dependencies: []
+        )
     ]
 )
