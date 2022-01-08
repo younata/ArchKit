@@ -142,6 +142,7 @@ open class BaseCoordinator: NSObject, Coordinator {
  */
 public class NavigationCoordinator: BaseCoordinator {
     /// The `UINavigationController` for this hierarchy.
+    /// - Warning: If you set the `navigationController`'s delegate yourself, please be sure to override `navigationController(_:animationControllerFor:from:to:)` and forward the call to this object. You can safely ignore the return value for `navigationController(_:animationControllerFor:from:to:)` from this object (it's always `nil`).
     public let navigationController: UINavigationController
 
     /**
@@ -205,16 +206,17 @@ extension NavigationCoordinator: UINavigationControllerDelegate {
     /**
      This tracks when the user uses the UI to pop view controllers, finds the relevant coordinator for that view controller, stops it, and removes it from the child coordinators.
      */
-    public func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        if let index = navigationController.viewControllers.firstIndex(of: viewController)?.advanced(by: 1) {
-            let subarray = Array(navigationController.viewControllers[index..<(navigationController.viewControllers.count)].reversed())
+    public func navigationController(_ navigationController: UINavigationController,
+                                     animationControllerFor operation: UINavigationController.Operation,
+                                     from fromVC: UIViewController,
+                                     to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        guard operation == .pop else { return nil }
 
-            for vc in subarray {
-                if let coordinator = children.first(where: { $0.rootViewController == vc }) {
-                    stopAndPop(child: coordinator)
-                }
-            }
+        if let coordinator = children.first(where: { $0.rootViewController == fromVC }) {
+            stopAndPop(child: coordinator)
         }
+
+        return nil
     }
 }
 
