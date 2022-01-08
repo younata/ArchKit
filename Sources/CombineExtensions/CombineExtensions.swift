@@ -1,6 +1,7 @@
 #if canImport(Combine)
 
 import Combine
+import Dispatch
 
 extension Future {
     /// Helper function to create an already-finished `Future` with the given value.
@@ -29,23 +30,28 @@ extension Publisher {
      */
     public func firstOutputAsFuture() -> Future<Output, Failure> {
         return Future<Output, Failure> { resolver in
+            let queue = DispatchQueue(label: "firstOutputAsFuture", attributes: .concurrent)
             var inProgress: Bool = true
             var cancellable: AnyCancellable?
             cancellable = self.sink(
                 receiveCompletion: { completion in
-                    _ = cancellable
-                    guard inProgress else { return }
-                    if case let .failure(error) = completion {
-                        resolver(.failure(error))
-                    } else {
-                        // Don't ever resolve this future, I guess.
+                    queue.sync {
+                        guard inProgress else { return }
+                        if case let .failure(error) = completion {
+                            resolver(.failure(error))
+                        } else {
+                            // Don't ever resolve this future, I guess.
+                        }
+                        _ = cancellable
                     }
                 },
                 receiveValue: { value in
-                    guard inProgress else { return }
-                    resolver(.success(value))
+                    queue.sync {
+                        guard inProgress else { return }
+                        resolver(.success(value))
 
-                    inProgress = false
+                        inProgress = false
+                    }
                 }
             )
         }
