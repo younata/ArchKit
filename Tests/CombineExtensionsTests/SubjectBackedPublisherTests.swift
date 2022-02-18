@@ -1,5 +1,5 @@
 import XCTest
-import ArchKit
+import CombineExtensions
 
 #if canImport(Combine)
 import Combine

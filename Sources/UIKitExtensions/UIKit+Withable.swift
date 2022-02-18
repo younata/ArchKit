@@ -1,4 +1,5 @@
 #if canImport(UIKit)
+#if !os(watchOS)
 
 import UIKit
 
@@ -79,4 +80,5 @@ extension UIButton {
 }
 
 
+#endif
 #endif

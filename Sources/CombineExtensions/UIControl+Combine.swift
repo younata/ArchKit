@@ -1,5 +1,6 @@
 #if canImport(Combine)
 #if canImport(UIKit)
+#if !os(watchOS)
 
 import UIKit
 import Combine
@@ -71,5 +72,6 @@ extension CombineExtended where Self: UIControl {
 }
 
 
+#endif
 #endif
 #endif

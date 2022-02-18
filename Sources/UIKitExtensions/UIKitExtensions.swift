@@ -1,4 +1,5 @@
 #if canImport(UIKit)
+#if !os(watchOS)
 
 import UIKit
 
@@ -13,6 +14,7 @@ extension UIEdgeInsets {
     }
 }
 
+@available(watchOS, unavailable)
 extension Array where Element == UIView {
     /**
      Lays out the list of views vertically from top to bottom.
@@ -90,6 +92,7 @@ extension Array where Element == UIView {
     private var lastIndex: Int { self.count - 1 }
 }
 
+@available(watchOS, unavailable)
 extension UIView {
     /**
      A holder for the layout priorities of each edge a view can have.
@@ -508,4 +511,5 @@ extension UIView {
     }
 }
 
+#endif
 #endif

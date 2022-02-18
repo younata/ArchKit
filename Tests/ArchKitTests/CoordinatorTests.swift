@@ -2,6 +2,7 @@ import XCTest
 import ArchKit
 
 #if canImport(UIKit)
+#if !os(watchOS)
 import UIKit
 
 final class BaseCoordinatorTests: XCTestCase {
@@ -64,4 +65,5 @@ final class BaseCoordinatorTests: XCTestCase {
 
 // NavigationCoordinator requires a window to test things in, which I don't know how to set up in a Swift Package Test.
 
+#endif
 #endif
