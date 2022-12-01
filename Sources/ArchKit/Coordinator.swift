@@ -10,6 +10,7 @@ import UIKit
 
  Coordinators should be initialized with everything they need to start work, and then actually start that work (invoke services, subscribe to events, present alerts if need be) in ``-start()``
  */
+@MainActor
 public protocol Coordinator: AnyObject {
     /// The child coordinators of this coordinator.
     var children: [Coordinator] { get }
@@ -77,6 +78,7 @@ extension Coordinator {
 }
 
 /// A concrete implementation of Coordinator, using NSObject as the superclass (so that it, and all subclasses, can easily conform to delegates requiring `NSObjectProtocol`).
+@MainActor
 open class BaseCoordinator: NSObject, Coordinator {
     /// The list of child coordinators
     public private(set) var children: [Coordinator] = []
@@ -141,6 +143,7 @@ open class BaseCoordinator: NSObject, Coordinator {
 /**
  A concrete implementation of a `Coordinator` for a navigation hierarchy.
  */
+@MainActor
 public class NavigationCoordinator: BaseCoordinator {
     /// The `UINavigationController` for this hierarchy.
     /// - Warning: If you set the `navigationController`'s delegate yourself, please be sure to override `navigationController(_:animationControllerFor:from:to:)` and forward the call to this object. You can safely ignore the return value for `navigationController(_:animationControllerFor:from:to:)` from this object (it's always `nil`).

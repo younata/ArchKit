@@ -5,6 +5,7 @@ import ArchKit
 #if !os(watchOS)
 import UIKit
 
+@MainActor
 final class BaseCoordinatorTests: XCTestCase {
     func testStartAndStop() {
         let subject = BaseCoordinator(rootViewController: UIViewController())
