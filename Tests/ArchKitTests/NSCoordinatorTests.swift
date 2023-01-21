@@ -1,14 +1,13 @@
 import XCTest
 import ArchKit
 
-#if canImport(UIKit)
-#if !os(watchOS)
-import UIKit
+#if canImport(Cocoa)
+import Cocoa
 
 @MainActor
-final class BaseCoordinatorTests: XCTestCase {
+final class BaseNSCoordinatorTests: XCTestCase {
     func testStartAndStop() {
-        let subject = BaseCoordinator(rootViewController: UIViewController())
+        let subject = BaseNSCoordinator(rootViewController: NSViewController())
 
         XCTAssertFalse(subject.isActive)
 
@@ -22,8 +21,8 @@ final class BaseCoordinatorTests: XCTestCase {
     }
 
     func testAddAndRemoveChildren() {
-        let parent = BaseCoordinator(rootViewController: UIViewController())
-        let child = BaseCoordinator(rootViewController: UIViewController())
+        let parent = BaseNSCoordinator(rootViewController: NSViewController())
+        let child = BaseNSCoordinator(rootViewController: NSViewController())
 
         parent.addChild(child)
 
@@ -44,8 +43,8 @@ final class BaseCoordinatorTests: XCTestCase {
     }
 
     func testpushAndStart_stopAndPop() {
-        let parent = BaseCoordinator(rootViewController: UIViewController())
-        let child = BaseCoordinator(rootViewController: UIViewController())
+        let parent = BaseNSCoordinator(rootViewController: NSViewController())
+        let child = BaseNSCoordinator(rootViewController: NSViewController())
 
         parent.pushAndStart(child: child)
 
@@ -64,7 +63,4 @@ final class BaseCoordinatorTests: XCTestCase {
     }
 }
 
-// NavigationCoordinator requires a window to test things in, which I don't know how to set up in a Swift Package Test.
-
-#endif
 #endif

@@ -13,7 +13,8 @@ From a top-down perspective we have:
 This also contains a number of other subpackages and helpers, because I don't care to split them off into their own repository:
 
 - ArchKit
-  - [`Coordinator.swift`](Sources/ArchKit/Coordinator.swift) is the big one, already detailed above.
+  - [`UICoordinator.swift`](Sources/ArchKit/UICoordinator.swift) is the big one, already detailed above. This is meant to be used with UIKit/UIViewController.
+  - [`NSCoordinator.swift`](Sources/ArchKit/NSCoordinator.swift) like UICoordinator, but for Cocoa/NSViewController.
   - [`Withable.swift`](Sources/ArchKit/Withable.swift) is a protocol for setting properties via their keypaths, which is really useful for using the builder pattern with objective-c types.
 - Combine Extensions
   - [`CombineExtensions.swift`](Sources/CombineExtensions/CombineExtensions.swift) contains a number of extensions on Combine that make life a bit easier.

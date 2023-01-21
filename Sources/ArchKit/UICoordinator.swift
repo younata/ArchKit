@@ -11,9 +11,9 @@ import UIKit
  Coordinators should be initialized with everything they need to start work, and then actually start that work (invoke services, subscribe to events, present alerts if need be) in ``-start()``
  */
 @MainActor
-public protocol Coordinator: AnyObject {
+public protocol UICoordinator: AnyObject {
     /// The child coordinators of this coordinator.
-    var children: [Coordinator] { get }
+    var children: [UICoordinator] { get }
     /// Whether this coordinator is active or not.
     var isActive: Bool { get }
 
@@ -25,14 +25,14 @@ public protocol Coordinator: AnyObject {
 
      - Parameter coordinator: The Coordinator to make a child of the receiving Coordinator.
      */
-    func addChild(_ coordinator: Coordinator)
+    func addChild(_ coordinator: UICoordinator)
 
     /**
      Removes the given coordinator as a child of the receiver.
 
      - Parameter coordinator: The Coordinator to remove.
      */
-    func removeChild(_ coordinator: Coordinator)
+    func removeChild(_ coordinator: UICoordinator)
 
     /**
      Starts work for this coordinator.
@@ -51,14 +51,14 @@ public protocol Coordinator: AnyObject {
     func stop()
 }
 
-extension Coordinator {
+extension UICoordinator {
     /**
      Combines the work of adding a child coordinator and calling ``-start()`` on it.
 
      - Parameter child: The coordinator to start and add as a child to the receiver. If the coordinator is already a child of the receiver, then this method no-ops.
      - Note: This method first adds the coordinator as a child, then calls ``-start()`` on it.
      */
-    public func pushAndStart(child: Coordinator) {
+    public func pushAndStart(child: UICoordinator) {
         guard children.contains(where: { $0 === child }) == false else { return }
         addChild(child)
         child.start()
@@ -70,7 +70,7 @@ extension Coordinator {
      - Parameter child: The coordinator to stop and remove as a child of the receiver. If the "child" is not actually a child of the receiver, then this mthod no-ops.
      - Note: This method first calls ``-stop()`` on the child coordinator, then removes it as a child of the receiver.
      */
-    public func stopAndPop(child: Coordinator) {
+    public func stopAndPop(child: UICoordinator) {
         guard children.contains(where: { $0 === child }) else { return }
         child.stop()
         removeChild(child)
@@ -79,9 +79,9 @@ extension Coordinator {
 
 /// A concrete implementation of Coordinator, using NSObject as the superclass (so that it, and all subclasses, can easily conform to delegates requiring `NSObjectProtocol`).
 @MainActor
-open class BaseCoordinator: NSObject, Coordinator {
+open class BaseUICoordinator: NSObject, UICoordinator {
     /// The list of child coordinators
-    public private(set) var children: [Coordinator] = []
+    public private(set) var children: [UICoordinator] = []
     /// Whether the coordinator is active or not.
     public private(set) var isActive: Bool = false
 
@@ -104,7 +104,7 @@ open class BaseCoordinator: NSObject, Coordinator {
 
      - Parameter coordinator: The Coordinator to make a child of the receiving Coordinator.
      */
-    public func addChild(_ coordinator: Coordinator) {
+    public func addChild(_ coordinator: UICoordinator) {
         children.append(coordinator)
     }
 
@@ -113,7 +113,7 @@ open class BaseCoordinator: NSObject, Coordinator {
 
      - Parameter coordinator: The Coordinator to remove.
      */
-    public func removeChild(_ coordinator: Coordinator) {
+    public func removeChild(_ coordinator: UICoordinator) {
         children.removeAll(where: { $0 === coordinator })
     }
 
@@ -144,7 +144,7 @@ open class BaseCoordinator: NSObject, Coordinator {
  A concrete implementation of a `Coordinator` for a navigation hierarchy.
  */
 @MainActor
-public class NavigationCoordinator: BaseCoordinator {
+public class NavigationUICoordinator: BaseUICoordinator {
     /// The `UINavigationController` for this hierarchy.
     /// - Warning: If you set the `navigationController`'s delegate yourself, please be sure to override `navigationController(_:animationControllerFor:from:to:)` and forward the call to this object. You can safely ignore the return value for `navigationController(_:animationControllerFor:from:to:)` from this object (it's always `nil`).
     public let navigationController: UINavigationController
@@ -154,8 +154,8 @@ public class NavigationCoordinator: BaseCoordinator {
 
      - Returns: A  NavigationCoordinator for an empty hierarchy.
      */
-    public static func root() -> NavigationCoordinator {
-        return NavigationCoordinator(navigationController: UINavigationController())
+    public static func root() -> NavigationUICoordinator {
+        return NavigationUICoordinator(navigationController: UINavigationController())
     }
 
     /**
@@ -179,7 +179,7 @@ public class NavigationCoordinator: BaseCoordinator {
 
      - ToDo: It would be nice to expose something like `push` on ``BaseCoordinator`` subclasses that correctly pushes onto the navigation stack when you call `addChild` on that coordinator.
      */
-    public func push(coordinator: Coordinator, animated: Bool = true) {
+    public func push(coordinator: UICoordinator, animated: Bool = true) {
         guard children.contains(where: { $0 === coordinator }) == false else {
             return
         }
@@ -206,7 +206,7 @@ public class NavigationCoordinator: BaseCoordinator {
     }
 }
 
-extension NavigationCoordinator: UINavigationControllerDelegate {
+extension NavigationUICoordinator: UINavigationControllerDelegate {
     /**
      This tracks when the user uses the UI to pop view controllers, finds the relevant coordinator for that view controller, stops it, and removes it from the child coordinators.
      */
