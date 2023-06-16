@@ -97,7 +97,7 @@ extension UIView {
     /**
      A holder for the layout priorities of each edge a view can have.
      */
-    public struct LayoutPriorities {
+    public struct LayoutPriorities: Sendable {
         /**
          Generates a LayoutPriorities struct with the given properties
          */
@@ -130,7 +130,7 @@ extension UIView {
 
      - Note: This can be used as either a single edge (`let edge: Edge = .leading`) or an array of edges (`let edges: Edge = [.leading, .trailing]`).
      */
-    public struct Edge: OptionSet {
+    public struct Edge: OptionSet, Sendable {
         public init(rawValue: Int) {
             self.rawValue = rawValue
         }
@@ -172,7 +172,7 @@ extension UIView {
     /**
      The possible dimensions to constrain views along.
      */
-    public enum Dimension {
+    public enum Dimension: Sendable {
         /// The horizontal dimension (along the X-axis)
         case horizontal
         /// The vertical dimension (along the y-axis)

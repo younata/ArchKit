@@ -1,4 +1,4 @@
-#if canImport(Cocoa)
+#if canImport(Cocoa) && !canImport(UIKit)
 import Cocoa
 
 /**

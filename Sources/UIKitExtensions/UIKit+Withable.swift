@@ -16,8 +16,8 @@ extension UILabel {
     }
 
     @discardableResult
-    public func withText(_ text: String) -> Self {
-        (self as UILabel).text = text
+    public func withText(_ content: String) -> Self {
+        (self as UILabel).content = content
         return self
     }
 }
@@ -35,8 +35,8 @@ extension UITextField {
     }
 
     @discardableResult
-    public func withText(_ text: String) -> Self {
-        (self as UITextField).text = text
+    public func withText(_ content: String) -> Self {
+        (self as UITextField).content = content
         return self
     }
 }

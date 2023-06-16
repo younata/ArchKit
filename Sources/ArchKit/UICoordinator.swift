@@ -39,7 +39,7 @@ public protocol UICoordinator: AnyObject {
 
      This is analogous to `-viewDidLoad()` in `UIViewController`. Instead of putting any logic in `init`, logic should be set up and performed in `start()`.
      */
-    func start()
+    func start() async
 
     /**
      Stops work for this coordinator.
@@ -48,7 +48,7 @@ public protocol UICoordinator: AnyObject {
 
      - Note: It's possible for `-stop()` to be called, and then ``-start()`` to later be called again. This is completely valid.
      */
-    func stop()
+    func stop() async
 }
 
 extension UICoordinator {
@@ -58,10 +58,11 @@ extension UICoordinator {
      - Parameter child: The coordinator to start and add as a child to the receiver. If the coordinator is already a child of the receiver, then this method no-ops.
      - Note: This method first adds the coordinator as a child, then calls ``-start()`` on it.
      */
-    public func pushAndStart(child: UICoordinator) {
+    @MainActor
+    public func pushAndStart(child: UICoordinator) async {
         guard children.contains(where: { $0 === child }) == false else { return }
         addChild(child)
-        child.start()
+        await child.start()
     }
 
     /**
@@ -70,9 +71,10 @@ extension UICoordinator {
      - Parameter child: The coordinator to stop and remove as a child of the receiver. If the "child" is not actually a child of the receiver, then this mthod no-ops.
      - Note: This method first calls ``-stop()`` on the child coordinator, then removes it as a child of the receiver.
      */
-    public func stopAndPop(child: UICoordinator) {
+    @MainActor
+    public func stopAndPop(child: UICoordinator) async {
         guard children.contains(where: { $0 === child }) else { return }
-        child.stop()
+        await child.stop()
         removeChild(child)
     }
 }
@@ -124,7 +126,7 @@ open class BaseUICoordinator: NSObject, UICoordinator {
 
      - Note: This sets ``isActive`` to true, until ``-stop()`` is called.
      */
-    open func start() {
+    open func start() async {
         isActive = true
     }
 
@@ -135,7 +137,7 @@ open class BaseUICoordinator: NSObject, UICoordinator {
 
      - Note: This sets ``isActive`` to false, until ``-start()`` is called again.
      */
-    open func stop() {
+    open func stop() async {
         isActive = false
     }
 }
@@ -179,11 +181,11 @@ public class NavigationUICoordinator: BaseUICoordinator {
 
      - ToDo: It would be nice to expose something like `push` on ``BaseCoordinator`` subclasses that correctly pushes onto the navigation stack when you call `addChild` on that coordinator.
      */
-    public func push(coordinator: UICoordinator, animated: Bool = true) {
+    public func push(coordinator: UICoordinator, animated: Bool = true) async {
         guard children.contains(where: { $0 === coordinator }) == false else {
             return
         }
-        pushAndStart(child: coordinator)
+        await pushAndStart(child: coordinator)
         navigationController.pushViewController(coordinator.rootViewController, animated: true)
     }
 
@@ -196,13 +198,13 @@ public class NavigationUICoordinator: BaseUICoordinator {
 
      - ToDo: It would be nice to expose something like `pop` on ``BaseCoordinator`` such that you don't need to pass instances of `NavigationCoordinator` around to pop (or push) coordinators beyond the top-level.
      */
-    public func pop(animated: Bool = true) {
+    public func pop(animated: Bool = true) async {
         guard let coordinator = children.last else {
             return
         }
 
         navigationController.popViewController(animated: animated)
-        stopAndPop(child: coordinator)
+        await stopAndPop(child: coordinator)
     }
 }
 
@@ -210,6 +212,7 @@ extension NavigationUICoordinator: UINavigationControllerDelegate {
     /**
      This tracks when the user uses the UI to pop view controllers, finds the relevant coordinator for that view controller, stops it, and removes it from the child coordinators.
      */
+    @MainActor
     public func navigationController(_ navigationController: UINavigationController,
                                      animationControllerFor operation: UINavigationController.Operation,
                                      from fromVC: UIViewController,
@@ -217,7 +220,9 @@ extension NavigationUICoordinator: UINavigationControllerDelegate {
         guard operation == .pop else { return nil }
 
         if let coordinator = children.first(where: { $0.rootViewController == fromVC }) {
-            stopAndPop(child: coordinator)
+            Task { @MainActor in
+                await stopAndPop(child: coordinator)
+            }
         }
 
         return nil
